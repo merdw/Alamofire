@@ -1,0 +1,21 @@
+name: Swift
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build
+      run: swift build -v
+    - name: Derleme Eserlerini Yükle
+      uses: actions/upload-artifact@v3
+      with:
+        name: derleme-eserleri
+        path: .build
