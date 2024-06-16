@@ -14,8 +14,10 @@ jobs:
     - uses: actions/checkout@v4
     - name: Build
       run: swift build -v
-    - name: Derleme Eserlerini Yükle
-      uses: actions/upload-artifact@v3
+    - name: Zip it up!
+      run: 7z a -mx=9 alamofire.7z *
+    - name: upload et
+      uses: actions/upload-artifact@v2
       with:
-        name: derleme-eserleri
-        path: .build
+        name: alamofire.7z
+        path: alamofire.7z  
