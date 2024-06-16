@@ -21,3 +21,20 @@ jobs:
       with:
         name: alamofire.7z
         path: alamofire.7z  
+
+    - name: Set release date & time
+      run: |
+        echo "RELEASE_DATE=$(date -u +%d-%b-%Y)" >> ${GITHUB_ENV}
+        echo "RELEASE_TIME=$(date -u +%H:%M)" >> ${GITHUB_ENV}
+
+            
+    - name: Create release 
+      uses: ncipollo/release-action@v1.13.0
+      with:
+        name: alamofire ${{ env.RELEASE_DATE }}
+        tag: build-${{ env.RELEASE_DATE }}-${{ env.RELEASE_COMMIT }}
+        body: Compiled on ${{ env.RELEASE_DATE }} at ${{ env.RELEASE_TIME }} GMT, alamofire commit ${{ env.RELEASE_COMMIT }}
+        artifacts: "alamofire.7z"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        allowUpdates: true
+        draft: true
