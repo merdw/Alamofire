@@ -18,6 +18,10 @@ jobs:
       - name: check Xcode version
         run: /usr/bin/xcodebuild -version
 
+      - name: check scheme
+        run: |
+          xcodebuild -list
+
 
       - name: build archive
         run: |
