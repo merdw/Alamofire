@@ -20,17 +20,32 @@ jobs:
 
       - name: check scheme
         run: |
+          cd Example
+
+      - name: check scheme
+        run: |
           xcodebuild -list
 
+      - name: check directory
+        run: |
+          ls
 
       - name: build archive
         run: |
-          xcodebuild -list -scheme "Alamofire iOS" \
+          xcodebuild -scheme "Alamofire iOS" \
           -archivePath $RUNNER_TEMP/iamgroot.xcarchive \
           -sdk iphoneos \
           -configuration Debug \
           -destination generic/platform=iOS \
           clean archive          
+
+      - name: check directory
+        run: |
+          ls
+      - name: check directory
+        run: |
+          cd $RUNNER_TEMP \
+          ls
 
       - name: export ipa
         run: |
