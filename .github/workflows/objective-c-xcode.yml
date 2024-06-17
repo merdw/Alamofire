@@ -21,7 +21,7 @@ jobs:
 
       - name: build archive
         run: |
-          xcodebuild -scheme "iOS Example" \
+          xcodebuild -list -scheme "Alamofire" \
           -archivePath $RUNNER_TEMP/iamgroot.xcarchive \
           -sdk iphoneos \
           -configuration Debug \
