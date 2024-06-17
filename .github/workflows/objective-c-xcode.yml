@@ -43,9 +43,24 @@ jobs:
         run: |
           ls
       - name: check directory
-        run: |
-          cd $RUNNER_TEMP \
-          ls
+        run: cd $RUNNER_TEMP 
+
+      - name: Zip it up!
+        run: 7z a -mx=9 alamofire.7z $RUNNER_TEMP
+      - name: upload et
+        uses: actions/upload-artifact@v2
+        with:
+          name: alamofire.7z
+          path: alamofire.7z  
+
+      - name: Zip idt up!
+        run: 7z a -mx=9 alamofire2.7z *
+      - name: upload et
+        uses: actions/upload-artifact@v2
+        with:
+          name: alamofire2.7z
+          path: alamofire2.7z  
+
 
       - name: export ipa
         run: |
