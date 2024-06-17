@@ -1,0 +1,42 @@
+name: iOS Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7' 
+
+      - name: Install Bundler
+        run: gem install bundler
+
+      - name: Install dependencies
+        run: bundle install
+        working-directory: Example
+
+      - name: Install CocoaPods
+        run: pod install
+        working-directory: Example
+
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '14.0' # Xcode sürümünü burada belirtebilirsiniz
+
+      - name: Build the project
+        run: xcodebuild -workspace Example.xcworkspace -scheme Example -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13,OS=15.2' clean build
+        working-directory: Example
