@@ -21,7 +21,7 @@ jobs:
 
       - name: build archive
         run: |
-          xcodebuild -scheme "I am Groot" \
+          xcodebuild -scheme "iOS Example" \
           -archivePath $RUNNER_TEMP/iamgroot.xcarchive \
           -sdk iphoneos \
           -configuration Debug \
