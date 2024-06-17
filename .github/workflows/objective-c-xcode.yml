@@ -18,90 +18,40 @@ jobs:
       - name: check Xcode version
         run: /usr/bin/xcodebuild -version
 
-      - name: check scheme
-        run: |
-          cd Example
+      # - name: check scheme
+      #   run: |
+      #     cd Example
 
-      - name: check scheme
-        run: |
-          xcodebuild -list
+      # - name: check scheme
+      #   run: |
+      #     xcodebuild -list
 
-      - name: check directory
-        run: |
-          ls
+      # - name: check directory
+      #   run: |
+      #     ls
 
-      - name: build archive
-        run: |
-          xcodebuild -scheme "Alamofire iOS" \
-          -archivePath $RUNNER_TEMP/iamgroot.xcarchive \
-          -sdk iphoneos \
-          -configuration Debug \
-          -destination generic/platform=iOS \
-          clean archive          
-
-      - name: check directory
-        run: |
-          ls
-      - name: check directory
-        run: cd $RUNNER_TEMP 
-
-      - name: Zip it up!
-        run: 7z a -mx=9 alamofire.7z $RUNNER_TEMP
-      - name: upload et
-        uses: actions/upload-artifact@v2
-        with:
-          name: alamofire.7z
-          path: alamofire.7z  
-
-      - name: Zip idt up!
-        run: 7z a -mx=9 alamofire2.7z *
-      - name: upload et
-        uses: actions/upload-artifact@v2
-        with:
-          name: alamofire2.7z
-          path: alamofire2.7z  
+      # - name: build archive
+      #   run: |
+      #     xcodebuild -scheme "Alamofire iOS" \
+      #     -archivePath $RUNNER_TEMP/iamgroot.xcarchive \
+      #     -sdk iphoneos \
+      #     -configuration Debug \
+      #     -destination generic/platform=iOS \
+      #     clean archive          
 
 
-      - name: export ipa
-        run: |
-          xcodebuild -exportArchive -archivePath $RUNNER_TEMP/iamgroot.xcarchive -exportPath $RUNNER_TEMP/build          
-
-      - name: Upload application
-        uses: actions/upload-artifact@v3
-        with:
-          name: app
-          path: ${{ runner.temp }}/build/I\ am\ Groot.ipa
-          # you can also archive the entire directory 
-          # path: ${{ runner.temp }}/build
-          retention-days: 3
-
-
-
-
-
-
-
-
-
-        
-
-      - name: Set Default Scheme
-        run: |
-          scheme_list=$(xcodebuild -list -json -project Example/iOS\ Example.xcodeproj | tr -d "\n")
-          default=$(echo $scheme_list | ruby -e "require 'json'; puts JSON.parse(STDIN.gets)['project']['targets'][0]")
-          echo $default | cat >default
-          echo Using default scheme: $default
 
       - name: Build
-        env:
-          scheme: ${{ 'default' }}
-          platform: ${{ 'iOS Simulator' }}
-        run: |
-          device=$(xcrun xctrace list devices 2>&1 | grep -oE 'iPhone.*?[^\(]+' | head -1 | awk '{$1=$1;print}' | sed -e "s/ Simulator$//")
-          if [ $scheme = default ]; then scheme=$(cat default); fi
-          file_to_build="Example/iOS Example.xcodeproj"
-          xcodebuild build-for-testing -scheme "$scheme" -project "$file_to_build" -destination "generic/platform=iOS" \
-          clean archive   
-          
+        run: xcodebuild -scheme "Alamofire iOS" -sdk iphonesimulator
 
-     
+      - name: Archive
+        run: xcodebuild archive -scheme "Alamofire iOS" -sdk iphonesimulator -archivePath ${{ github.workspace }}/build/Alamofire.xcarchive
+
+      - name: Export Archive
+        run: xcodebuild -exportArchive -archivePath ${{ github.workspace }}/build/Alamofire.xcarchive -exportPath ${{ github.workspace }}/build -exportOptionsPlist ExportOptions.plist
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: Alamofire-build
+          path: ${{ github.workspace }}/build
