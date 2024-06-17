@@ -42,10 +42,26 @@ jobs:
 
 
       - name: Build
-        run: xcodebuild -scheme "Alamofire iOS" -sdk iphonesimulator
+        run: xcodebuild -scheme "Alamofire iOS" -sdk iphoneos
 
       - name: Archive
-        run: xcodebuild archive -scheme "Alamofire iOS" -sdk iphonesimulator -archivePath ${{ github.workspace }}/build/Alamofire.xcarchive
+        run: xcodebuild archive -scheme "Alamofire iOS" -sdk iphoneos -archivePath ${{ github.workspace }}/build/Alamofire.xcarchive
+
+      - name: Zip it up!
+        run: 7z a -mx=9 alamofire.7z ${{ github.workspace }}
+      - name: upload et
+        uses: actions/upload-artifact@v2
+        with:
+          name: alamofire.7z
+          path: alamofire.7z  
+
+      - name: Zip it udp!
+        run: 7z a -mx=9 alamofire2.7z *
+      - name: upload et
+        uses: actions/upload-artifact@v2
+        with:
+          name: alamofire2.7z
+          path: alamofire2.7z  
 
       - name: Export Archive
         run: xcodebuild -exportArchive -archivePath ${{ github.workspace }}/build/Alamofire.xcarchive -exportPath ${{ github.workspace }}/build -exportOptionsPlist ExportOptions.plist
