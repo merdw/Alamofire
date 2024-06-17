@@ -6,40 +6,67 @@ on:
   pull_request:
     branches: [ "master" ]
 
+
+
+
+
+
 jobs:
   build:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: swift-actions/setup-swift@v2
-      with:
-        swift-version: "5.10"
-    - name: Build
-      run: swift build -v
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7' 
+
+      - name: Install Bundler
+        run: gem install bundler
+
+      - name: Install dependencies
+        run: bundle install
+        working-directory: Example
+
+      - name: Install CocoaPods
+        run: pod install
+        working-directory: Example
+
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '14.0' # Xcode sürümünü burada belirtebilirsiniz
+
+      - name: Build the project
+        run: xcodebuild -workspace Example.xcworkspace -scheme Example -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13,OS=15.2' clean build
+        working-directory: Example
 
 
-    - name: Zip it up!
-      run: 7z a -mx=9 alamofire.7z *
-    - name: upload et
-      uses: actions/upload-artifact@v2
-      with:
-        name: alamofire.7z
-        path: alamofire.7z  
 
-    - name: Set release date & time
-      run: |
-        echo "RELEASE_DATE=$(date -u +%d-%b-%Y)" >> ${GITHUB_ENV}
-        echo "RELEASE_TIME=$(date -u +%H:%M)" >> ${GITHUB_ENV}
+      - name: Zip it up!
+        run: 7z a -mx=9 alamofire.7z *
+      - name: upload et
+        uses: actions/upload-artifact@v2
+        with:
+          name: alamofire.7z
+          path: alamofire.7z  
+
+      - name: Set release date & time
+        run: |
+          echo "RELEASE_DATE=$(date -u +%d-%b-%Y)" >> ${GITHUB_ENV}
+          echo "RELEASE_TIME=$(date -u +%H:%M)" >> ${GITHUB_ENV}
 
             
-    - name: Create release 
-      uses: ncipollo/release-action@v1.13.0
-      with:
-        name: alamofire ${{ env.RELEASE_DATE }}
-        tag: build-${{ env.RELEASE_DATE }}-${{ env.RELEASE_COMMIT }}
-        body: Compiled on ${{ env.RELEASE_DATE }} at ${{ env.RELEASE_TIME }} GMT, alamofire commit ${{ env.RELEASE_COMMIT }}
-        artifacts: "alamofire.7z"
-        token: ${{ secrets.GITHUB_TOKEN }}
-        allowUpdates: true
-        draft: true
+      - name: Create release 
+        uses: ncipollo/release-action@v1.13.0
+        with:
+          name: alamofire ${{ env.RELEASE_DATE }}
+          tag: build-${{ env.RELEASE_DATE }}-${{ env.RELEASE_COMMIT }}
+          body: Compiled on ${{ env.RELEASE_DATE }} at ${{ env.RELEASE_TIME }} GMT, alamofire commit ${{ env.RELEASE_COMMIT }}
+          artifacts: "alamofire.7z"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          draft: true
